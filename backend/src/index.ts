@@ -5,8 +5,12 @@ import mongoose from "mongoose";
 import CategoriesRouteur from "./routes/categories";
 const app = express();
 const port = process.env.PORT || 3000;
+
 mongoose.connect(process.env.MONGO_URL!);
+
+app.use(express.json());
 app.use("/categories", CategoriesRouteur);
+
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World !");
 });
