@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Menu } from '@headlessui/react';
+import React, { useState } from "react";
+import Link from "next/link";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,12 +10,9 @@ const Header: React.FC = () => {
   return (
     <header className="bg-gray-800 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
-        
         {/* Logo */}
         <div className="text-2xl font-bold">
-          <Link href="/">
-            MonLogo
-          </Link>
+          <Link href="/">MonLogo</Link>
         </div>
 
         {/* Menu Burger pour mobile */}
@@ -38,47 +35,63 @@ const Header: React.FC = () => {
             ></path>
           </svg>
         </button>
-        
+
         {/* Navigation */}
-        <nav className={`${isOpen ? "block" : "hidden"} md:flex space-x-4 items-center`}>
+        <nav
+          className={`${
+            isOpen ? "block" : "hidden"
+          } md:flex space-x-4 items-center`}
+        >
           <Link href="/">
             <span className="text-gray-300 hover:text-white">Accueil</span>
           </Link>
 
           {/* Produits avec sous-menu utilisant @headlessui/react */}
           <Menu as="div" className="relative">
-            <Menu.Button className="text-gray-300 hover:text-white focus:outline-none">
+            <MenuButton className="text-gray-300 hover:text-white focus:outline-none">
               Produits
-            </Menu.Button>
-            <Menu.Items className="absolute top-full mt-2 bg-gray-700 rounded-md shadow-lg w-48 z-10">
-              <Menu.Item>
-                {({ active }) => (
+            </MenuButton>
+            <MenuItems className="absolute top-full mt-2 bg-gray-700 rounded-md shadow-lg w-48 z-10">
+              <MenuItem>
+                {({ focus }) => (
                   <Link href="/products/category1">
-                    <span className={`block px-4 py-2 ${active ? 'bg-gray-600 text-white' : 'text-gray-300'}`}>
+                    <span
+                      className={`block px-4 py-2 ${
+                        focus ? "bg-gray-600 text-white" : "text-gray-300"
+                      }`}
+                    >
                       Catégorie 1
                     </span>
                   </Link>
                 )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
+              </MenuItem>
+              <MenuItem>
+                {({ focus }) => (
                   <Link href="/products/category2">
-                    <span className={`block px-4 py-2 ${active ? 'bg-gray-600 text-white' : 'text-gray-300'}`}>
+                    <span
+                      className={`block px-4 py-2 ${
+                        focus ? "bg-gray-600 text-white" : "text-gray-300"
+                      }`}
+                    >
                       Catégorie 2
                     </span>
                   </Link>
                 )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
+              </MenuItem>
+              <MenuItem>
+                {({ focus }) => (
                   <Link href="/products/category3">
-                    <span className={`block px-4 py-2 ${active ? 'bg-gray-600 text-white' : 'text-gray-300'}`}>
+                    <span
+                      className={`block px-4 py-2 ${
+                        focus ? "bg-gray-600 text-white" : "text-gray-300"
+                      }`}
+                    >
                       Catégorie 3
                     </span>
                   </Link>
                 )}
-              </Menu.Item>
-            </Menu.Items>
+              </MenuItem>
+            </MenuItems>
           </Menu>
 
           <Link href="/about">
@@ -91,8 +104,6 @@ const Header: React.FC = () => {
       </div>
     </header>
   );
-}; 
+};
 
 export default Header;
-
-
