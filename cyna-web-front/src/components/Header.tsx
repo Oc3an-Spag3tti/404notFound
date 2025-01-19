@@ -45,6 +45,9 @@ const Header: React.FC = () => {
           <Link href="/">
             <span className="text-gray-300 hover:text-white">Accueil</span>
           </Link>
+          <Link href="/products">
+            <span className="text-gray-300 hover:text-white">Products</span>
+          </Link>
 
           {/* Produits avec sous-menu utilisant @headlessui/react */}
           <Menu as="div" className="relative">
