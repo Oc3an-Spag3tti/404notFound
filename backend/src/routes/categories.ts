@@ -13,7 +13,7 @@ CategoriesRouteur.post("/", async (req: Request, res: Response) => {
 CategoriesRouteur.get("/:id", async (req: Request, res: Response) => {
   res.send(await Categories.find({ _id: req.params.id }));
 });
-CategoriesRouteur.put("/:id", async (req: Request, res: Response) => {
+CategoriesRouteur.patch("/:id", async (req: Request, res: Response) => {
   res.send(await Categories.updateOne({ _id: req.params.id }, req.body));
 });
 CategoriesRouteur.delete("/:id", async (req: Request, res: Response) => {
