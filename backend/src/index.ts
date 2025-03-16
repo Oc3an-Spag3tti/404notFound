@@ -14,8 +14,8 @@ mongoose.connect(process.env.MONGO_URL!);
 app.use(express.json());
 app.use(cors());
 
-app.use("/categories", CategoriesRouteur);
-app.use("/products", productsRouter);
+app.use("/categories", CategoriesRouteur); // localhost:3000/categories
+app.use("/products", productsRouter); // localhost:3000/products
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World !");

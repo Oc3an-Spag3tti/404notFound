@@ -1,6 +1,9 @@
 import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 
 import "../app/globals.css";
+import AddProductModal from "../components/products/add-product-modal";
+import EditProductModal from "@/components/products/edit-product-modal";
 
 type ProductItem = {
   _id: string;
@@ -8,7 +11,6 @@ type ProductItem = {
   price: number;
 };
 
-// https://nextjs.org/docs/pages/building-your-application/data-fetching/get-server-side-props
 export const getServerSideProps: GetServerSideProps = async () => {
   const res = await fetch("http://localhost:3001/products");
   const productsData = await res.json();
@@ -20,6 +22,30 @@ export default function Product({
 }: {
   productsData: ProductItem[];
 }) {
+  const router = useRouter();
+
+  async function deleteProduct(_id: string) {
+    const dataToSend = {
+      _id,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3001/products", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      console.log("response after deletion ->", response);
+      router.reload();
+    } catch (err) {
+      // Popup ?
+      console.error("Cannot delete product:", err);
+    }
+  }
+
   return (
     <>
       <h1 className="text-4xl">Products Page</h1>
@@ -49,6 +75,7 @@ export default function Product({
                 <button
                   type="button"
                   className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                  onClick={() => deleteProduct(product._id)}
                 >
                   Delete
                 </button>
@@ -63,6 +90,8 @@ export default function Product({
           ))}
         </tbody>
       </table>
+      <AddProductModal />
+      <EditProductModal />
     </>
   );
 }
