@@ -12,22 +12,34 @@ export default function AddProductModal() {
   const [name, setName] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [price, setPrice] = useState<number>();
+  const [isLoading, setIsLoading] = useState<boolean>();
 
   async function callCreateProduct() {
+    setIsLoading(true); // on désactive le formulaire;
+
     const dataToSend = {
       name,
       description,
       price,
     };
 
-    const response = await fetch("http://localhost:3001/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataToSend),
-    });
-    console.log(response);
+    try {
+      const response = await fetch("http://localhost:3001/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      setIsOpen(false); // fermer le modal
+      console.log("created product, response:", response);
+    } catch (error) {
+      console.error(error);
+      window.alert("Création de produit. Erreur serveur !");
+    }
+
+    setIsLoading(false);
   }
 
   const onSubmit = (e: FormEvent) => {
@@ -76,6 +88,7 @@ export default function AddProductModal() {
                         </div>
                         <div className="md:w-2/3">
                           <input
+                            disabled={isLoading}
                             required
                             onChange={(e) => {
                               setName(e.target.value);
@@ -95,6 +108,7 @@ export default function AddProductModal() {
                           <input
                             className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                             type="text"
+                            disabled={isLoading}
                             onChange={(e) => setDescription(e.target.value)}
                           />
                         </div>
@@ -109,11 +123,14 @@ export default function AddProductModal() {
                           <input
                             className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                             type="number"
+                            disabled={isLoading}
                             onChange={(e) => setPrice(Number(e.target.value))}
                           />
                         </div>
                       </div>
-                      <button type="submit">Save</button>
+                      <button type="submit" disabled={isLoading}>
+                        Save
+                      </button>
                     </form>
 
                     <div className="mt-2">
