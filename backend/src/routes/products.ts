@@ -11,8 +11,23 @@ productsRouter.get("/", async (req: Request, res: Response) => {
   res.json(products);
 });
 
+productsRouter.get("/search", async (req: Request, res: Response) => {
+  const productName = req.query.product_name;
+  const myLimit = parseInt(req.query.limit as string) || 10;
+
+  // TODO utiliser un filtre "case-insensitive" et un "contains"
+  const productSearch = await Products.find({
+    name: { $regex: productName, $options: "i" },
+  }).limit(myLimit);
+  res.json({
+    products: productSearch,
+    success: true,
+  });
+}); // GET `localhost:3000/products/search`
+
 // Front fait un POST pour ajouter un produit;
 // format des données -> { name, description, price }
+
 productsRouter.post("/", async (req: Request, res: Response) => {
   /*const product = new Products(req.body); // instance de notre model
   await product.save();*/

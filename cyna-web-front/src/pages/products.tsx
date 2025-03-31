@@ -8,6 +8,7 @@ import EditProductModal from "@/components/products/edit-product-modal";
 type ProductItem = {
   _id: string;
   name: string;
+  description: string;
   price: number;
 };
 
@@ -70,6 +71,7 @@ export default function Product({
               className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
             >
               <td className="px-6 py-4">{product.name} </td>
+              <td className="px-6 py-4">{product.description}</td>
               <td className="px-6 py-4">{product.price}</td>
               <td className="px-6 py-4">
                 <button
