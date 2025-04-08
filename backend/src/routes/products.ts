@@ -1,22 +1,93 @@
 import { Router } from "express";
 import { Request, Response } from "express";
-import Products from "../models/productsModel";
 
-const ProductsRouteur = Router();
-ProductsRouteur.get("/", async (req: Request, res: Response) => {
-  res.send(await Products.find());
+import Products from "../models/productsModels";
+import { ObjectId } from "mongodb";
+
+const productsRouter = Router();
+
+// Front fait un GET pour récup les produits;
+productsRouter.get("/", async (req: Request, res: Response) => {
+  const products = await Products.find();
+  res.json(products);
 });
-ProductsRouteur.post("/", async (req: Request, res: Response) => {
-  console.log(req.body);
-  res.send(await Products.insertMany(req.body));
+
+productsRouter.get("/search", async (req: Request, res: Response) => {
+  const productName = req.query.product_name;
+  const myLimit = parseInt(req.query.limit as string) || 10;
+
+  // TODO utiliser un filtre "case-insensitive" et un "contains"
+  const productSearch = await Products.find({
+    name: { $regex: productName, $options: "i" },
+  }).limit(myLimit);
+  res.json({
+    products: productSearch,
+    success: true,
+  });
 });
-ProductsRouteur.get("/:id", async (req: Request, res: Response) => {
-  res.send(await Products.find({ _id: req.params.id }));
+
+productsRouter.get("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const product = await Products.findById(id);
+  res.json(product);
 });
-ProductsRouteur.patch("/:id", async (req: Request, res: Response) => {
-  res.send(await Products.updateOne({ _id: req.params.id }, req.body));
+
+// GET `localhost:3000/products/search`
+
+// Front fait un POST pour ajouter un produit;
+// format des données -> { name, description, price }
+
+productsRouter.post("/", async (req: Request, res: Response) => {
+  /*const product = new Products(req.body); // instance de notre model
+  await product.save();*/
+
+  const name = req.body.name;
+  const description = req.body.description;
+  const price = req.body.price;
+
+  const product = await Products.create({
+    name,
+    description,
+    price,
+  });
+
+  /*
+  un objet qui contient l'identifiant du produit qui vient d'^
+  
+  */
+
+  res.json({ _id: product._id, success: true });
 });
-ProductsRouteur.delete("/:id", async (req: Request, res: Response) => {
-  res.send(await Products.deleteOne({ _id: req.params.id }));
+
+productsRouter.put("/", async (req: Request, res: Response) => {
+  const { name, description, price } = req.body;
+
+  const result = await Products.updateOne(
+    { name: name }, // Recherche par le nom du produit
+    {
+      $set: {
+        description, // Mise à jour de la description
+        price, // Mise à jour du prix
+      },
+    }
+  );
 });
-export default ProductsRouteur;
+
+productsRouter.delete("/", async (req: Request, res: Response) => {
+  // 1. INPUT -> _id de type string  -> req.body._id
+  const _idString = req.body._id;
+  const name = req.body.name;
+  // 2. PROCESS ????
+
+  const _objectId = new ObjectId(_idString);
+  // 3. OUTPUT -> un _id de type ObjectId
+
+  const filter = { _id: _objectId }; // to fix
+
+  const product = await Products.deleteOne(filter);
+
+  res.send({ _objectId, product });
+});
+
+export default productsRouter;
+

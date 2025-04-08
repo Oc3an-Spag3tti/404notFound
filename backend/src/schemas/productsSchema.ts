@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 import categoriesSchema from "./categoriesSchema";
 
 const productsSchema = new mongoose.Schema({
@@ -7,4 +8,5 @@ const productsSchema = new mongoose.Schema({
   price: Number,
   category: categoriesSchema,
 });
+
 export default productsSchema;
