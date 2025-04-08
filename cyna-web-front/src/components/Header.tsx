@@ -34,9 +34,9 @@ const Header: React.FC = () => {
           .catch((err) => {
             console.error(err);
           });
-      }, 300);
+      }, 50);
 
-      return () => clearTimeout(delayDebounce);
+      return () => clearTimeout(delayDebounce); // annule le timeout precedent si searchText modif avant 50ms
     } else {
       setProductsList([]); // Réinitialiser la liste si la recherche est vide
     }
@@ -107,16 +107,18 @@ const Header: React.FC = () => {
               }}
             />
 
-            <ul className="absolute w-full bg-white border shadow-lg rounded-lg">
-              {Array.isArray(productsList) && productsList.length > 0 ? (
-                productsList.map((product) => (
-                  <li key={product._id} className="hover:bg-gray-100">
-                    {product.name}
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500">Aucun produit trouvé</li>
-              )}
+            <ul className="absolute w-full bg-white shadow-lg rounded-lg">
+              {productsList.map((product) => (
+                // <li key={product._id} className="hover:bg-gray-100">
+                <Link
+                  href={`/products/${product._id}`}
+                  key={product._id}
+                  className="hover:bg-gray-100"
+                >
+                  <li>{product.name}</li>
+                </Link>
+                // </li>
+              ))}
             </ul>
 
             <button

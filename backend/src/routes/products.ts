@@ -23,7 +23,15 @@ productsRouter.get("/search", async (req: Request, res: Response) => {
     products: productSearch,
     success: true,
   });
-}); // GET `localhost:3000/products/search`
+});
+
+productsRouter.get("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const product = await Products.findById(id);
+  res.json(product);
+});
+
+// GET `localhost:3000/products/search`
 
 // Front fait un POST pour ajouter un produit;
 // format des données -> { name, description, price }
