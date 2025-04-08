@@ -26,9 +26,9 @@ usersRouter.post("/register", async (req, res) => {
     const hashedPassword = await argon2.hash(password);
 
     // Création de l'utilisateur
-    const stripeUser = await stripe.accounts.create({
+    const stripeUser = await stripe.customers.create({
       email: email,
-      type: "express",
+      name: name,
     });
     const newUser = new User({
       email,
