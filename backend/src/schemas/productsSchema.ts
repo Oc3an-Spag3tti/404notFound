@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
 
+import categoriesSchema from "./categoriesSchema";
+
 const productsSchema = new mongoose.Schema({
   name: String,
-  description: String,
+  desc: String,
   price: Number,
+  category: categoriesSchema,
 });
 
 export default productsSchema;

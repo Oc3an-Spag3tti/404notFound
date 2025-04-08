@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { Request, Response } from "express";
+
 import Products from "../models/productsModels";
 import { ObjectId } from "mongodb";
 
@@ -89,3 +90,4 @@ productsRouter.delete("/", async (req: Request, res: Response) => {
 });
 
 export default productsRouter;
+
