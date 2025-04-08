@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { FaShoppingCart } from "react-icons/fa"; // Import cart icon
 
 type ProductItem = {
   _id: string;
@@ -36,24 +37,24 @@ const Header: React.FC = () => {
           });
       }, 50);
 
-      return () => clearTimeout(delayDebounce); // annule le timeout precedent si searchText modif avant 50ms
+      return () => clearTimeout(delayDebounce);
     } else {
-      setProductsList([]); // Réinitialiser la liste si la recherche est vide
+      setProductsList([]);
     }
   }, [searchText]);
 
   return (
-    <header className="bg-gray-800 p-4">
+    <header className="bg-purple-700 p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="text-2xl font-bold text-white">
-          <Link href="/">MonLogo</Link>
+          <Link href="/">MyLogo</Link>
         </div>
 
-        {/* Menu Burger pour mobile */}
+        {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden focus:outline-none"
+          className="md:hidden focus:outline-none text-white"
         >
           <svg
             className="w-6 h-6"
@@ -71,64 +72,45 @@ const Header: React.FC = () => {
           </svg>
         </button>
 
-        <form className="max-w-md mx-auto" onSubmit={onSubmitSearch}>
-          <label
-            htmlFor="default-search"
-            className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-          >
-            Search
-          </label>
+        {/* Search Bar */}
+        <form className="max-w-lg mx-auto flex-grow" onSubmit={onSubmitSearch}>
           <div className="relative">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg
-                className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-            </div>
             <input
               type="search"
               id="default-search"
-              className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search Mockups, Logos..."
+              className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-purple-500 focus:border-purple-500"
+              placeholder="Search products..."
               required
               onChange={(e) => {
                 setSearchText(e.target.value);
               }}
             />
-
-            <ul className="absolute w-full bg-white shadow-lg rounded-lg">
+            <ul className="absolute w-full bg-white shadow-lg rounded-lg mt-1">
               {productsList.map((product) => (
-                // <li key={product._id} className="hover:bg-gray-100">
                 <Link
                   href={`/products/${product._id}`}
                   key={product._id}
-                  className="hover:bg-gray-100"
+                  className="block px-4 py-2 hover:bg-purple-100"
                 >
-                  <li>{product.name}</li>
+                  {product.name}
                 </Link>
-                // </li>
               ))}
             </ul>
-
             <button
               type="submit"
-              className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              className="text-white absolute end-2.5 bottom-2.5 bg-purple-600 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-4 py-2"
             >
               Search
             </button>
           </div>
         </form>
+
+        {/* Cart Icon */}
+        <div className="text-white ml-12">
+          <Link href="/cart">
+            <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
+          </Link>
+        </div>
 
         {/* Navigation */}
         <nav
@@ -136,28 +118,26 @@ const Header: React.FC = () => {
             isOpen ? "block" : "hidden"
           } md:flex space-x-4 items-center`}
         >
-          <Link href="/">
-            <span className="text-gray-300 hover:text-white">Accueil</span>
+          <Link href="/login" target="_blank" rel="noopener noreferrer">
+            <span className="text-gray-200 hover:text-white">Login</span>
           </Link>
           <Link href="/products">
-            <span className="text-gray-300 hover:text-white">Products</span>
+            <span className="text-gray-200 hover:text-white">Products</span>
           </Link>
-
-          {/* Produits avec sous-menu utilisant @headlessui/react */}
           <Menu as="div" className="relative">
-            <MenuButton className="text-gray-300 hover:text-white focus:outline-none">
-              Produits
+            <MenuButton className="text-gray-200 hover:text-white focus:outline-none">
+              Categories
             </MenuButton>
-            <MenuItems className="absolute top-full mt-2 bg-gray-700 rounded-md shadow-lg w-48 z-10">
+            <MenuItems className="absolute top-full mt-2 bg-purple-600 rounded-md shadow-lg w-48 z-10">
               <MenuItem>
                 {({ focus }) => (
                   <Link href="/products/category1">
                     <span
                       className={`block px-4 py-2 ${
-                        focus ? "bg-gray-600 text-white" : "text-gray-300"
+                        focus ? "bg-purple-500 text-white" : "text-gray-200"
                       }`}
                     >
-                      Catégorie 1
+                      Category 1
                     </span>
                   </Link>
                 )}
@@ -167,10 +147,10 @@ const Header: React.FC = () => {
                   <Link href="/products/category2">
                     <span
                       className={`block px-4 py-2 ${
-                        focus ? "bg-gray-600 text-white" : "text-gray-300"
+                        focus ? "bg-purple-500 text-white" : "text-gray-200"
                       }`}
                     >
-                      Catégorie 2
+                      Category 2
                     </span>
                   </Link>
                 )}
@@ -180,22 +160,21 @@ const Header: React.FC = () => {
                   <Link href="/products/category3">
                     <span
                       className={`block px-4 py-2 ${
-                        focus ? "bg-gray-600 text-white" : "text-gray-300"
+                        focus ? "bg-purple-500 text-white" : "text-gray-200"
                       }`}
                     >
-                      Catégorie 3
+                      Category 3
                     </span>
                   </Link>
                 )}
               </MenuItem>
             </MenuItems>
           </Menu>
-
           <Link href="/about">
-            <span className="text-gray-300 hover:text-white">À propos</span>
+            <span className="text-gray-200 hover:text-white">About</span>
           </Link>
           <Link href="/contact">
-            <span className="text-gray-300 hover:text-white">Contact</span>
+            <span className="text-gray-200 hover:text-white">Contact</span>
           </Link>
         </nav>
       </div>

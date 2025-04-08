@@ -25,7 +25,6 @@ const CategoriesSection = () => {
   return (
     <>
       <div>
-        <h1>Categories</h1>
         <ul></ul>
       </div>
       <div className="items-center justify-center">
