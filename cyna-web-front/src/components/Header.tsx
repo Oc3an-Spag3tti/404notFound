@@ -134,7 +134,7 @@ const Header: React.FC = () => {
             <MenuItems className="absolute top-full mt-2 bg-purple-600 rounded-md shadow-lg w-48 z-10">
               <MenuItem>
                 {({ focus }) => (
-                  <Link href="/products/category1">
+                  <Link href="/categories/category1">
                     <span
                       className={`block px-4 py-2 ${
                         focus ? "bg-purple-500 text-white" : "text-gray-200"
@@ -147,7 +147,7 @@ const Header: React.FC = () => {
               </MenuItem>
               <MenuItem>
                 {({ focus }) => (
-                  <Link href="/products/category2">
+                  <Link href="/categories/category2">
                     <span
                       className={`block px-4 py-2 ${
                         focus ? "bg-purple-500 text-white" : "text-gray-200"
@@ -160,7 +160,7 @@ const Header: React.FC = () => {
               </MenuItem>
               <MenuItem>
                 {({ focus }) => (
-                  <Link href="/products/category3">
+                  <Link href="/categories/category3">
                     <span
                       className={`block px-4 py-2 ${
                         focus ? "bg-purple-500 text-white" : "text-gray-200"

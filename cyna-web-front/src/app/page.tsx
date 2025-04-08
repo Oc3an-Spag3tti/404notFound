@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Carousel from "@/components/Carousel";
-import CategoriesSection from "@/components/CategoriesSection";
+// import CategoriesSection from "@/components/CategoriesSection";
 
 export default function Home() {
   return (
