@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+});
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,6 +17,13 @@ export default function Login() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+
+    // Validation avec Zod
+    const validationResult = loginSchema.safeParse({ email, password });
+    if (!validationResult.success) {
+      setError(validationResult.error.errors[0].message);
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:3001/users/login", {
