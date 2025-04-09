@@ -1,14 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:3001/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.error || "Login failed");
+        return;
+      }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token); // Stocke le token dans le localStorage
+      alert("Login successful!");
+      router.push("/"); // Redirige vers la racine
+    } catch (err) {
+      console.error(err);
+      setError("Server error. Please try again later.");
+    }
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-purple-800">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-bold text-center text-purple-700 mb-6">
           Login
         </h1>
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -19,6 +54,8 @@ export default function Login() {
             <input
               type="email"
               id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Your Email"
               className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
             />
@@ -33,10 +70,13 @@ export default function Login() {
             <input
               type="password"
               id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Your Password"
               className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
             className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition"
