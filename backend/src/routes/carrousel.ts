@@ -7,7 +7,7 @@ carrouselRouteur.get("/", async (req, res) => {
   res.send(carrousels);
 });
 carrouselRouteur.get("/list", async (req, res) => {
-  res.send(Carrousel.find({ isActive: true }));
+  res.send(Carrousel.find({ isActive: true }).sort({ position: "asc" }));
 });
 
 carrouselRouteur.post("/", async (req, res) => {
@@ -19,3 +19,4 @@ carrouselRouteur.put("/:id", async (req, res) => {
 carrouselRouteur.delete("/:id", async (req, res) => {
   res.send(await Carrousel.deleteOne({ _id: req.params.id }));
 });
+export default carrouselRouteur;

@@ -16,3 +16,4 @@ fixedStringsRouter.patch("/:title", async (req, res) => {
   );
   res.send(fixedStrings);
 });
+export default fixedStringsRouter;

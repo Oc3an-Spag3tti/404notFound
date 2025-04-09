@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 
 import Products from "../models/productsModels";
 import { ObjectId } from "mongodb";
+import Stripe from "stripe";
+import { stripe } from "..";
 
 const productsRouter = Router();
 
@@ -37,26 +39,47 @@ productsRouter.get("/:id", async (req: Request, res: Response) => {
 // Front fait un POST pour ajouter un produit;
 // format des données -> { name, description, price }
 
+// productsRouter.post("/", async (req: Request, res: Response) => {
+//   /*const product = new Products(req.body); // instance de notre model
+//   await product.save();*/
+
+//   const name = req.body.name;
+//   const description = req.body.description;
+//   const price = req.body.price;
+
+//   const product = await Products.create({
+//     name,
+//     description,
+//     price,
+//   });
+
+//   /*
+//   un objet qui contient l'identifiant du produit qui vient d'^
+
+//   */
+
+//   res.json({ _id: product._id, success: true });
+// });
 productsRouter.post("/", async (req: Request, res: Response) => {
-  /*const product = new Products(req.body); // instance de notre model
-  await product.save();*/
-
-  const name = req.body.name;
-  const description = req.body.description;
-  const price = req.body.price;
-
-  const product = await Products.create({
-    name,
-    description,
-    price,
+  const stripeProduct = await stripe.products.create({
+    name: req.body.name,
+    description: req.body.description,
+    default_price_data: {
+      currency: "eur",
+      unit_amount: req.body.price,
+      recurring: req.body.recurring
+        ? {
+            interval: req.body.recurring.interval,
+            interval_count: req.body.recurring.interval_count,
+          }
+        : undefined,
+    },
   });
-
-  /*
-  un objet qui contient l'identifiant du produit qui vient d'^
-  
-  */
-
-  res.json({ _id: product._id, success: true });
+  Products.create({
+    name: req.body.name,
+    desc: req.body.description,
+    price: req.body.price,
+  });
 });
 
 productsRouter.put("/", async (req: Request, res: Response) => {
@@ -71,6 +94,7 @@ productsRouter.put("/", async (req: Request, res: Response) => {
       },
     }
   );
+  res.json(result);
 });
 
 productsRouter.delete("/", async (req: Request, res: Response) => {
@@ -90,4 +114,3 @@ productsRouter.delete("/", async (req: Request, res: Response) => {
 });
 
 export default productsRouter;
-
