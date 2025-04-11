@@ -3,8 +3,9 @@ import { Request, Response } from "express";
 
 import Products from "../models/productsModels";
 import { ObjectId } from "mongodb";
-import Stripe from "stripe";
 import { stripe } from "..";
+import isAuth from "../utils/isAuth";
+import isAdmin from "../utils/isAdmin";
 
 const productsRouter = Router();
 
@@ -60,7 +61,7 @@ productsRouter.get("/:id", async (req: Request, res: Response) => {
 
 //   res.json({ _id: product._id, success: true });
 // });
-productsRouter.post("/", async (req: Request, res: Response) => {
+productsRouter.post("/", isAdmin, async (req: Request, res: Response) => {
   const stripeProduct = await stripe.products.create({
     name: req.body.name,
     description: req.body.description,
@@ -82,7 +83,7 @@ productsRouter.post("/", async (req: Request, res: Response) => {
   });
 });
 
-productsRouter.put("/", async (req: Request, res: Response) => {
+productsRouter.put("/", isAdmin, async (req: Request, res: Response) => {
   const { name, description, price } = req.body;
 
   const result = await Products.updateOne(
@@ -97,7 +98,7 @@ productsRouter.put("/", async (req: Request, res: Response) => {
   res.json(result);
 });
 
-productsRouter.delete("/", async (req: Request, res: Response) => {
+productsRouter.delete("/", isAdmin, async (req: Request, res: Response) => {
   // 1. INPUT -> _id de type string  -> req.body._id
   const _idString = req.body._id;
   const name = req.body.name;

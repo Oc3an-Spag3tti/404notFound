@@ -19,8 +19,8 @@ mongoose.connect(process.env.MONGO_URL!);
 app.use(express.json());
 app.use(cors());
 
-app.use("/categories", CategoriesRouteur); // localhost:3000/categories
-app.use("/products", productsRouter); // curl http://localhost:3000/products
+app.use("/categories", CategoriesRouteur);
+app.use("/products", productsRouter);
 app.use("/fixedStrings", fixedStringsRouter);
 app.use("/users", usersRouter);
 app.use("/carrousel", carrouselRouteur);
