@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { FaShoppingCart } from "react-icons/fa";
 
 type ProductItem = {
@@ -12,9 +11,10 @@ type ProductItem = {
 };
 
 const Header: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [productsList, setProductsList] = useState<ProductItem[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   function onSubmitSearch(e: React.FormEvent<HTMLFormElement>) {
     console.log("onSubmitSearch");
@@ -31,6 +31,7 @@ const Header: React.FC = () => {
           .then((data) => {
             console.log("productsList: ", data.products);
             setProductsList(data.products);
+            setShowSuggestions(true); // Affiche suggestions
           })
           .catch((err) => {
             console.error(err);
@@ -43,6 +44,23 @@ const Header: React.FC = () => {
     }
   }, [searchText]);
 
+  const searchBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      // Si le clic est en dehors de la zone (champ de recherche ou suggestions)
+      if (searchBoxRef.current && !searchBoxRef.current.contains(target)) {
+        setShowSuggestions(false); // Ferme les suggestions
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    // Nettoyage de l'écouteur d'événement lors du démontage du composant
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []); // L'effet s'exécute une seule fois au montage du composant
+
   return (
     <header className="bg-purple-700 p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
@@ -53,7 +71,7 @@ const Header: React.FC = () => {
 
         {/* Mobile Menu Button */}
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsOpenMenu(!isOpenMenu)}
           className="md:hidden focus:outline-none text-white absolute right-0"
         >
           <svg
@@ -67,7 +85,9 @@ const Header: React.FC = () => {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+              d={
+                isOpenMenu ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
+              }
             ></path>
           </svg>
         </button>
@@ -76,29 +96,35 @@ const Header: React.FC = () => {
         <form
           className="max-w-lg mx-auto flex-grow p-4"
           onSubmit={onSubmitSearch}
+          onClick={() => setShowSuggestions(true)} // Affiche suggestions lorsque l'utilisateur clique dans le champ
         >
           <div className="relative">
-            <input
-              type="search"
-              id="default-search"
-              className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="Search products..."
-              required
-              onChange={(e) => {
-                setSearchText(e.target.value);
-              }}
-            />
-            <ul className="absolute w-full bg-white shadow-lg rounded-lg mt-1">
-              {productsList.map((product) => (
-                <Link
-                  href={`/products/${product._id}`}
-                  key={product._id}
-                  className="block px-4 py-2 hover:bg-purple-100"
-                >
-                  {product.name}
-                </Link>
-              ))}
-            </ul>
+            <div ref={searchBoxRef}>
+              <input
+                type="search"
+                id="default-search"
+                className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-purple-500 focus:border-purple-500"
+                placeholder="Search products..."
+                required
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
+              />
+              {showSuggestions && (
+                <ul className="absolute w-full bg-white shadow-lg rounded-lg mt-1">
+                  {productsList.map((product) => (
+                    <Link
+                      href={`/products/${product._id}`}
+                      key={product._id}
+                      className="block px-4 py-2 hover:bg-purple-100"
+                    >
+                      {product.name}
+                    </Link>
+                  ))}
+                </ul>
+              )}
+            </div>
+
             <button
               type="submit"
               className="text-white absolute right-0 bottom-0 h-full end-2.5 bg-purple-600 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-2"
@@ -131,7 +157,7 @@ const Header: React.FC = () => {
         {/* Navigation */}
         <nav
           className={`${
-            isOpen ? "block" : "hidden"
+            isOpenMenu ? "block" : "hidden"
           } md:flex space-x-4 items-center`}
         >
           <Link href="/login" target="_blank" rel="noopener noreferrer">
@@ -139,58 +165,6 @@ const Header: React.FC = () => {
           </Link>
           <Link href="/products">
             <span className="text-gray-200 hover:text-white">Products</span>
-          </Link>
-          <Menu as="div" className="relative">
-            <MenuButton className="text-gray-200 hover:text-white focus:outline-none">
-              Categories
-            </MenuButton>
-            <MenuItems className="absolute top-full mt-2 bg-purple-600 rounded-md shadow-lg w-48 z-10">
-              <MenuItem>
-                {({ focus }) => (
-                  <Link href="/categories/category1">
-                    <span
-                      className={`block px-4 py-2 ${
-                        focus ? "bg-purple-500 text-white" : "text-gray-200"
-                      }`}
-                    >
-                      Category 1
-                    </span>
-                  </Link>
-                )}
-              </MenuItem>
-              <MenuItem>
-                {({ focus }) => (
-                  <Link href="/categories/category2">
-                    <span
-                      className={`block px-4 py-2 ${
-                        focus ? "bg-purple-500 text-white" : "text-gray-200"
-                      }`}
-                    >
-                      Category 2
-                    </span>
-                  </Link>
-                )}
-              </MenuItem>
-              <MenuItem>
-                {({ focus }) => (
-                  <Link href="/categories/category3">
-                    <span
-                      className={`block px-4 py-2 ${
-                        focus ? "bg-purple-500 text-white" : "text-gray-200"
-                      }`}
-                    >
-                      Category 3
-                    </span>
-                  </Link>
-                )}
-              </MenuItem>
-            </MenuItems>
-          </Menu>
-          <Link href="/about">
-            <span className="text-gray-200 hover:text-white">About</span>
-          </Link>
-          <Link href="/contact">
-            <span className="text-gray-200 hover:text-white">Contact</span>
           </Link>
         </nav>
       </div>
