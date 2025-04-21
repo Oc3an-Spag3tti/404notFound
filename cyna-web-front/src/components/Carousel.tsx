@@ -6,10 +6,7 @@ import { Pagination, Navigation } from "swiper/modules";
 import "swiper/swiper-bundle.css";
 
 const Carousel: FC = () => (
-  <div className="relative w-full max-w-2xl mx-auto mt-8">
-    <h2 className="text-center text-2xl font-bold mb-6 text-purple-700">
-      Test Carousel
-    </h2>
+  <div className="relative flex items-center w-full mx-auto px-6 bg-[#2E1F80] h-[65vh]">
     <Swiper
       spaceBetween={20}
       slidesPerView={1}
@@ -39,6 +36,9 @@ const Carousel: FC = () => (
       <div className="swiper-button-next absolute top-1/2 right-0 transform -translate-y-1/2 p-3 bg-purple-600 rounded-full cursor-pointer text-white z-10">
         &#8594;
       </div>
+      <h2 className="text-center text-2xl font-bold mb-6 text-purple-700">
+        Test Carousel
+      </h2>
     </Swiper>
   </div>
 );

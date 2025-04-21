@@ -62,11 +62,16 @@ const Header: React.FC = () => {
   }, []); // L'effet s'exécute une seule fois au montage du composant
 
   return (
-    <header className="bg-purple-700 p-4 shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
+    <header className="bg-[#2E1F80] p-4 shadow-lg">
+      <div className="container mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="text-2xl font-bold text-white">
-          <Link href="/">MyLogo</Link>
+          <Link href="/">
+            <img
+              src="https://cyna-it.fr/wp-content/themes/theme-cyna-it/images/logo-cyna-white.svg"
+              alt=""
+            />
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -90,11 +95,12 @@ const Header: React.FC = () => {
               }
             ></path>
           </svg>
+          <h1></h1>
         </button>
 
-        {/* Search Bar */}
+        {/* Search Bar  mr-5*/}
         <form
-          className="max-w-lg mx-auto flex-grow p-4"
+          className="max-w-md flex-grow"
           onSubmit={onSubmitSearch}
           onClick={() => setShowSuggestions(true)} // Affiche suggestions lorsque l'utilisateur clique dans le champ
         >
@@ -146,27 +152,40 @@ const Header: React.FC = () => {
             </button>
           </div>
         </form>
+        <ul className="hidden lg:flex flex-col text-white lg:flex-row">
+          <li>Home</li>
+          <li>Categories</li>
+          <li>Contact</li>
+        </ul>
 
-        {/* Cart Icon */}
-        <div className="text-white m-5">
-          <Link href="/cart">
-            <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
-          </Link>
+        <div className="flex items-center">
+          {/* Navigation */}
+          <div className="text-white flex items-center">
+            <Link href="/cart">
+              <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
+            </Link>
+            <Link href="/login" target="_blank" rel="noopener noreferrer">
+              <span className="text-gray-200 hover:text-white">Login</span>
+            </Link>
+            <Link href="/register" target="_blank" rel="noopener noreferrer">
+              <span className="text-gray-200 hover:text-white">Register</span>
+            </Link>
+          </div>
+
+          <nav
+            className={`${
+              isOpenMenu ? "block" : "hidden"
+            } absolute top-16 left-0 w-2/3 h-screen bg-[#2E1F80] flex md:bg-transparent`}
+          >
+            <Link href="/login" target="_blank" rel="noopener noreferrer">
+              <span className="text-gray-200 hover:text-white">Login</span>
+            </Link>
+            <Link href="/register" target="_blank" rel="noopener noreferrer">
+              <span className="text-gray-200 hover:text-white">Register</span>
+            </Link>
+            {/* Cart Icon */}
+          </nav>
         </div>
-
-        {/* Navigation */}
-        <nav
-          className={`${
-            isOpenMenu ? "block" : "hidden"
-          } md:flex space-x-4 items-center`}
-        >
-          <Link href="/login" target="_blank" rel="noopener noreferrer">
-            <span className="text-gray-200 hover:text-white">Login</span>
-          </Link>
-          <Link href="/products">
-            <span className="text-gray-200 hover:text-white">Products</span>
-          </Link>
-        </nav>
       </div>
     </header>
   );
