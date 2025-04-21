@@ -1,7 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { z } from "zod";
+import { toast } from "react-hot-toast";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -12,16 +15,19 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     // Validation avec Zod
     const validationResult = loginSchema.safeParse({ email, password });
     if (!validationResult.success) {
       setError(validationResult.error.errors[0].message);
+      setIsLoading(false);
       return;
     }
 
@@ -37,16 +43,18 @@ export default function Login() {
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.error || "Login failed");
+        setIsLoading(false);
         return;
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token); // Stocke le token dans le localStorage
-      alert("Login successful!");
-      router.push("/"); // Redirige vers la racine
+      localStorage.setItem("token", data.token);
+      toast.success("Login successful!");
+      router.push("/productsBackOffice"); // Navigate to products page
     } catch (err) {
       console.error(err);
       setError("Server error. Please try again later.");
+      setIsLoading(false);
     }
   }
 
@@ -71,6 +79,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Your Email"
               className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -87,14 +96,16 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Your Password"
               className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+              disabled={isLoading}
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition"
+            className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
         <p className="text-center text-gray-600 mt-4">

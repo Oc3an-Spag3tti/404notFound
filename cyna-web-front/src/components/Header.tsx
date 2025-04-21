@@ -137,8 +137,8 @@ const Header: React.FC = () => {
           <Link href="/login" target="_blank" rel="noopener noreferrer">
             <span className="text-gray-200 hover:text-white">Login</span>
           </Link>
-          <Link href="/products">
-            <span className="text-gray-200 hover:text-white">Products</span>
+          <Link href="/productsBackOffice">
+            <span className="text-gray-200 hover:text-white">Products BackOffice</span>
           </Link>
           <Menu as="div" className="relative">
             <MenuButton className="text-gray-200 hover:text-white focus:outline-none">

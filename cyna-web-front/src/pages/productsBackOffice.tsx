@@ -81,19 +81,23 @@ export default function Product({
                 >
                   Delete
                 </button>
-                <button
-                  type="button"
-                  className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
-                >
-                  Edit
-                </button>
+                <EditProductModal 
+                  product={product}
+                  onProductUpdated={(updatedProduct) => {
+                    // Update the product in the list
+                    const updatedProducts = productsData.map(p => 
+                      p._id === updatedProduct._id ? updatedProduct : p
+                    );
+                    // Force a re-render with the updated data
+                    router.replace(router.asPath);
+                  }}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
       <AddProductModal />
-      <EditProductModal />
     </>
   );
 }

@@ -1,150 +1,169 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import "../../app/globals.css";
+import { useState, FormEvent } from "react";
+import { toast } from "react-hot-toast";
 
-export default function AddProductModal() {
+type ProductItem = {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+};
+
+type AddProductModalProps = {
+  onProductAdded?: (product: ProductItem) => void;
+};
+
+export default function AddProductModal({ onProductAdded }: AddProductModalProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const onClickAdd = () => {
-    setIsOpen(true);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState<number | "">("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const MIN_PRICE = 0.01;
+  const MAX_PRICE = 999999.99;
+
+  const validateForm = () => {
+    if (!name.trim()) {
+      toast.error("Product name is required");
+      return false;
+    }
+    if (!description.trim()) {
+      toast.error("Product description is required");
+      return false;
+    }
+    if (!price || price < MIN_PRICE) {
+      toast.error(`Price must be at least $${MIN_PRICE}`);
+      return false;
+    }
+    if (price > MAX_PRICE) {
+      toast.error(`Price cannot exceed $${MAX_PRICE}`);
+      return false;
+    }
+    return true;
   };
 
-  const [name, setName] = useState<string>();
-  const [description, setDescription] = useState<string>();
-  const [price, setPrice] = useState<number>();
-  const [isLoading, setIsLoading] = useState<boolean>();
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setPrice("");
+  };
 
-  async function callCreateProduct() {
-    setIsLoading(true); // on désactive le formulaire;
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    const dataToSend = {
-      name,
-      description,
-      price,
-    };
-
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:3001/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify({ name, description, price }),
       });
 
-      setIsOpen(false); // fermer le modal
-      console.log("created product, response:", response);
-    } catch (error) {
-      console.error(error);
-      window.alert("Création de produit. Erreur serveur !");
+      if (response.ok) {
+        const newProduct = await response.json();
+        if (onProductAdded) {
+          onProductAdded(newProduct);
+        }
+        toast.success("Product added successfully");
+        setIsOpen(false);
+        resetForm();
+      } else {
+        throw new Error("Failed to add product");
+      }
+    } catch (err) {
+      console.error("Error adding product:", err);
+      toast.error("Failed to add product. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
-  }
-
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    console.log("Submitting form");
-    console.log(name);
-    callCreateProduct();
   };
 
   return (
     <div>
-      <button className="btn-add" onClick={onClickAdd}>
-        Add
+      <button
+        onClick={() => setIsOpen(true)}
+        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+      >
+        Add Product
       </button>
 
-      <div
-        className={`fixed relative z-10 inset-0 z-10 ${isOpen ? "" : "hidden"}`}
-        aria-labelledby="modal-title"
-        role="dialog"
-        aria-modal="true"
-      >
-        <div
-          className="fixed inset-0 bg-gray-500/75 transition-opacity"
-          aria-hidden="true"
-        ></div>
-
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <h3
-                      className="text-base font-semibold text-gray-900"
-                      id="modal-title"
-                    >
-                      Add product
-                    </h3>
-
-                    <form action="" method="post" onSubmit={onSubmit}>
-                      <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                            Name
-                          </label>
-                        </div>
-                        <div className="md:w-2/3">
-                          <input
-                            disabled={isLoading}
-                            required
-                            onChange={(e) => {
-                              setName(e.target.value);
-                            }}
-                            className="name bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                            type="text"
-                          />
-                        </div>
-                      </div>
-                      <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                            Description
-                          </label>
-                        </div>
-                        <div className="md:w-2/3">
-                          <input
-                            className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                            type="text"
-                            disabled={isLoading}
-                            onChange={(e) => setDescription(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                            Price
-                          </label>
-                        </div>
-                        <div className="md:w-2/3">
-                          <input
-                            className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                            type="number"
-                            disabled={isLoading}
-                            onChange={(e) => setPrice(Number(e.target.value))}
-                          />
-                        </div>
-                      </div>
-                      <button type="submit" disabled={isLoading}>
-                        Save
-                      </button>
-                    </form>
-
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Enter product details below
-                      </p>
-                    </div>
-                  </div>
-                </div>
+      {isOpen && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Add Product</h2>
+            <form onSubmit={onSubmit}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  required
+                  maxLength={100}
+                  disabled={isLoading}
+                />
               </div>
-            </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 resize-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  required
+                  maxLength={500}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Price
+                </label>
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(Number(e.target.value))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  required
+                  min={MIN_PRICE}
+                  max={MAX_PRICE}
+                  step="0.01"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    resetForm();
+                  }}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+                  disabled={isLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Adding..." : "Save"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

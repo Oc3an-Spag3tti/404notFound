@@ -1,141 +1,163 @@
+"use client";
+
 import { useState, FormEvent } from "react";
+import { toast } from "react-hot-toast";
 
-export default function EditProductModal() {
-  const [name, setName] = useState<string>(""); // Nom du produit
-  const [description, setDescription] = useState<string>(""); // Nouvelle description
-  const [price, setPrice] = useState<number>(0); // Nouveau prix
+type ProductItem = {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+};
 
+type EditProductModalProps = {
+  product: ProductItem;
+  onProductUpdated?: (product: ProductItem) => void;
+};
+
+export default function EditProductModal({ product, onProductUpdated }: EditProductModalProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const onClickEdit = () => {
-    setIsOpen(true);
+  const [name, setName] = useState(product.name);
+  const [description, setDescription] = useState(product.description);
+  const [price, setPrice] = useState(product.price);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const MIN_PRICE = 0.01;
+  const MAX_PRICE = 999999.99;
+
+  const validateForm = () => {
+    if (!name.trim()) {
+      toast.error("Product name is required");
+      return false;
+    }
+    if (!description.trim()) {
+      toast.error("Product description is required");
+      return false;
+    }
+    if (!price || price < MIN_PRICE) {
+      toast.error(`Price must be at least $${MIN_PRICE}`);
+      return false;
+    }
+    if (price > MAX_PRICE) {
+      toast.error(`Price cannot exceed $${MAX_PRICE}`);
+      return false;
+    }
+    return true;
   };
 
-  async function callEditProduct() {
-    if (!name || !description || price === 0) {
-      console.error("All fields are required");
-      return;
-    }
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    const dataToSend = {
-      name, // Nom du produit à modifier
-      description, // Nouvelle description
-      price, // Nouveau prix
-    };
-
+    setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/products", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      });
+      const response = await fetch(
+        `http://localhost:3001/products/${product._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, description, price }),
+        }
+      );
 
       if (response.ok) {
-        console.log("Product updated successfully");
-        setIsOpen(false); // Fermer la modal après mise à jour
+        const updatedProduct = await response.json();
+        if (onProductUpdated) {
+          onProductUpdated(updatedProduct);
+        }
+        toast.success("Product updated successfully");
+        setIsOpen(false);
       } else {
-        console.error("Failed to update product");
+        throw new Error("Failed to update product");
       }
-    } catch (error) {
-      console.error("Error updating product:", error);
+    } catch (err) {
+      console.error("Error updating product:", err);
+      toast.error("Failed to update product. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-  }
-
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    callEditProduct();
   };
 
   return (
     <div>
-      <button className="btn-edit" onClick={onClickEdit}>
+      <button
+        onClick={() => setIsOpen(true)}
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+      >
         Edit
       </button>
 
-      <div
-        className={`fixed relative z-10 inset-0 z-10 ${isOpen ? "" : "hidden"}`}
-        aria-labelledby="modal-title"
-        role="dialog"
-        aria-modal="true"
-      >
-        <div
-          className="fixed inset-0 bg-gray-500/75 transition-opacity"
-          aria-hidden="true"
-        ></div>
-
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <h3
-                      className="text-base font-semibold text-gray-900"
-                      id="modal-title"
-                    >
-                      Edit product
-                    </h3>
-                    <form onSubmit={onSubmit}>
-                      <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                            Product Name
-                          </label>
-                        </div>
-                        <div className="md:w-2/3">
-                          <input
-                            required
-                            onChange={(e) => setName(e.target.value)}
-                            className="name bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                            type="text"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                            Description
-                          </label>
-                        </div>
-                        <div className="md:w-2/3">
-                          <input
-                            required
-                            onChange={(e) => setDescription(e.target.value)}
-                            className="name bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                            type="text"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                          <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                            Price
-                          </label>
-                        </div>
-                        <div className="md:w-2/3">
-                          <input
-                            required
-                            onChange={(e) => setPrice(Number(e.target.value))}
-                            className="name bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                            type="number"
-                          />
-                        </div>
-                      </div>
-
-                      <button type="submit" className="btn-primary">
-                        Edit Product
-                      </button>
-                    </form>
-                  </div>
-                </div>
+      {isOpen && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+            <form onSubmit={onSubmit}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  required
+                  maxLength={100}
+                  disabled={isLoading}
+                />
               </div>
-            </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 resize-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  required
+                  maxLength={500}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Price
+                </label>
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(Number(e.target.value))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  required
+                  min={MIN_PRICE}
+                  max={MAX_PRICE}
+                  step="0.01"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+                  disabled={isLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
