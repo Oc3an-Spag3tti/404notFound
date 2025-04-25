@@ -23,11 +23,9 @@ const CategoriesSection = () => {
   }, []);
 
   return (
-    <>
-      <div>
-        <ul></ul>
-      </div>
-      <div className="items-center justify-center">
+    <div>
+      <h1 className="text-[25px] lg:text-[40px] text-center p-8">Catégories</h1>
+      <div className="flex flex-wrap m-8 justify-center lg:gap-10 lg:w-full lg:max-w-5xl">
         {categories.map((category) => (
           <div
             key={category._id}
@@ -39,7 +37,7 @@ const CategoriesSection = () => {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 export default CategoriesSection;
