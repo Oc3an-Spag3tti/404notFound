@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { FaShoppingCart } from "react-icons/fa";
@@ -15,11 +15,25 @@ const Header: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [productsList, setProductsList] = useState<ProductItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showSearchMobile, setShowSearchMobile] = useState(false);
+  const router = useRouter();
+
+  const searchBoxRef = useRef<HTMLDivElement>(null);
 
   function onSubmitSearch(e: React.FormEvent<HTMLFormElement>) {
-    console.log("onSubmitSearch");
     e.preventDefault();
+    if (searchText.trim() !== "") {
+      router.push(`/search?product_name=${encodeURIComponent(searchText)}`);
+    }
+    console.log("Recherche envoyée :", searchText);
+    setShowSuggestions(false);
+    setShowSearchMobile(false); // Ferme overlay mobile
   }
+
+  // close suggestion if click on 1 suggestion
+  const handleSuggestionClick = () => {
+    setShowSuggestions(false);
+  };
 
   useEffect(() => {
     if (searchText.trim() !== "") {
@@ -29,107 +43,103 @@ const Header: React.FC = () => {
         )
           .then((response) => response.json())
           .then((data) => {
-            console.log("productsList: ", data.products);
             setProductsList(data.products);
-            setShowSuggestions(true); // Affiche suggestions
+            setShowSuggestions(true);
           })
-          .catch((err) => {
-            console.error(err);
-          });
-      }, 50);
+          .catch((err) => console.error(err));
+      }, 100);
 
       return () => clearTimeout(delayDebounce);
     } else {
       setProductsList([]);
+      setShowSuggestions(false);
     }
   }, [searchText]);
-
-  const searchBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
-      // Si le clic est en dehors de la zone (champ de recherche ou suggestions)
       if (searchBoxRef.current && !searchBoxRef.current.contains(target)) {
-        setShowSuggestions(false); // Ferme les suggestions
+        setShowSuggestions(false);
+        setShowSearchMobile(false);
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
-
-    // Nettoyage de l'écouteur d'événement lors du démontage du composant
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []); // L'effet s'exécute une seule fois au montage du composant
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <header className="bg-[#2E1F80] p-4 shadow-lg">
-      <div className="container mx-auto flex items-center justify-between">
+    <header className="relative fixed w-full bg-[#2E1F80] p-4 shadow-lg z-50">
+      <div className="container flex items-center justify-between gap-5">
         {/* Logo */}
         <div className="text-2xl font-bold text-white">
           <Link href="/">
             <img
               src="https://cyna-it.fr/wp-content/themes/theme-cyna-it/images/logo-cyna-white.svg"
-              alt=""
+              alt="Logo"
+              className="w-32"
             />
           </Link>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Icône loupe mobile */}
         <button
-          onClick={() => setIsOpenMenu(!isOpenMenu)}
-          className="md:hidden focus:outline-none text-white absolute right-0"
+          onClick={() => {
+            setShowSearchMobile(true); // Ouvre l'overlay
+            if (searchText.trim() !== "") {
+              setShowSuggestions(true); // Montre les suggestions si texte non vide
+            }
+          }}
+          className="block sm:hidden text-white mr-2"
         >
           <svg
             className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              stroke="currentColor"
               strokeWidth="2"
-              d={
-                isOpenMenu ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
-              }
-            ></path>
+              strokeLinecap="round"
+              d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+            />
           </svg>
-          <h1></h1>
         </button>
 
-        {/* Search Bar  mr-5*/}
+        {/* Desktop search bar */}
         <form
-          className="max-w-md flex-grow"
+          className="hidden sm:block max-w-80 flex-grow mx-6"
           onSubmit={onSubmitSearch}
-          onClick={() => setShowSuggestions(true)} // Affiche suggestions lorsque l'utilisateur clique dans le champ
         >
-          <div className="relative">
-            <div ref={searchBoxRef}>
-              <input
-                type="search"
-                id="default-search"
-                className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-purple-500 focus:border-purple-500"
-                placeholder="Search products..."
-                required
-                onChange={(e) => {
-                  setSearchText(e.target.value);
-                }}
-              />
-              {showSuggestions && (
-                <ul className="absolute w-full bg-white shadow-lg rounded-lg mt-1">
-                  {productsList.map((product) => (
-                    <Link
-                      href={`/products/${product._id}`}
-                      key={product._id}
-                      className="block px-4 py-2 hover:bg-purple-100"
-                    >
-                      {product.name}
-                    </Link>
-                  ))}
-                </ul>
-              )}
-            </div>
+          <div className="relative" ref={searchBoxRef}>
+            <input
+              type="search"
+              className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-purple-500 focus:border-purple-500"
+              placeholder="Search products..."
+              required
+              onChange={(e) => setSearchText(e.target.value)}
+              onClick={
+                showSuggestions
+                  ? () => setShowSuggestions(false)
+                  : () => setShowSuggestions(true)
+              }
+            />
+            {showSuggestions && (
+              <ul className="absolute w-full bg-white shadow-lg rounded-lg mt-1 z-50">
+                {productsList.map((product) => (
+                  <Link
+                    href={`/products/${product._id}`}
+                    key={product._id}
+                    className="block px-4 py-2 hover:bg-purple-100"
+                    onClick={() => handleSuggestionClick()}
+                  >
+                    {product.name}
+                  </Link>
+                ))}
+              </ul>
+            )}
 
             <button
               type="submit"
@@ -152,15 +162,59 @@ const Header: React.FC = () => {
             </button>
           </div>
         </form>
-        <ul className="hidden lg:flex flex-col text-white lg:flex-row">
-          <li>Home</li>
-          <li>Categories</li>
-          <li>Contact</li>
-        </ul>
 
-        <div className="flex items-center">
-          {/* Navigation */}
-          <div className="text-white flex items-center">
+        <div className="flex items-center gap-[100px]">
+          {/* Desktop nav */}
+          <ul className="hidden lg:flex text-white gap-[50px] text-sm font-medium items-center">
+            <li>
+              <Link href="/" className="hover:text-purple-200 cursor-pointer">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/categories"
+                className="hover:text-purple-200 cursor-pointer"
+              >
+                Categories
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/contact"
+                className="hover:text-purple-200 cursor-pointer"
+              >
+                Contact
+              </Link>
+            </li>
+          </ul>
+
+          {/* Menu burger */}
+          <button
+            onClick={() => setIsOpenMenu(!isOpenMenu)}
+            className=" lg:hidden focus:outline-none text-white"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d={
+                  isOpenMenu
+                    ? "M6 18L18 6M6 6l12 12"
+                    : "M4 6h16M4 12h16M4 18h16"
+                }
+              />
+            </svg>
+          </button>
+
+          {/* Desktop icons */}
+          <div className="hidden lg:flex items-center space-x-4 text-white">
             <Link href="/cart">
               <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
             </Link>
@@ -172,19 +226,69 @@ const Header: React.FC = () => {
             </Link>
           </div>
 
-          <nav
-            className={`${
-              isOpenMenu ? "block" : "hidden"
-            } absolute top-16 left-0 w-2/3 h-screen bg-[#2E1F80] flex md:bg-transparent`}
-          >
-            <Link href="/login" target="_blank" rel="noopener noreferrer">
-              <span className="text-gray-200 hover:text-white">Login</span>
-            </Link>
-            <Link href="/register" target="_blank" rel="noopener noreferrer">
-              <span className="text-gray-200 hover:text-white">Register</span>
-            </Link>
-            {/* Cart Icon */}
-          </nav>
+          {/* Overlay Search Mobile */}
+          {showSearchMobile && (
+            <div className="absolute top-0 left-0 w-full h-screen bg-white/90 backdrop-blur-sm p-4 z-50 flex items-start justify-center">
+              <form onSubmit={onSubmitSearch} className="w-full max-w-md">
+                <div className="relative" ref={searchBoxRef}>
+                  <input
+                    type="search"
+                    className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="Search products..."
+                    required
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                  {showSuggestions && (
+                    <ul className="absolute w-full bg-white shadow-lg rounded-lg mt-1 z-50">
+                      {productsList.map((product) => (
+                        <Link
+                          href={`/products/${product._id}`}
+                          key={product._id}
+                          className="block px-4 py-2 hover:bg-purple-100"
+                          onClick={() => {
+                            setShowSuggestions(false);
+                            setShowSearchMobile(false);
+                          }}
+                        >
+                          {product.name}
+                        </Link>
+                      ))}
+                    </ul>
+                  )}
+
+                  {/* Close overlay */}
+                  <button
+                    type="button"
+                    onClick={() => setShowSearchMobile(false)}
+                    className="absolute top-2 right-2 text-gray-600 hover:text-red-500"
+                  >
+                    ✕
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="text-white absolute right-0 bottom-0 h-full end-2.5 bg-purple-600 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       </div>
     </header>
