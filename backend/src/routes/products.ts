@@ -35,6 +35,10 @@ productsRouter.get("/:id", async (req: Request, res: Response) => {
   res.json(product);
 });
 
+productsRouter.get("/categorie", async (req: Request, res: Response) => {
+  const { categories } = req.params;
+});
+
 // GET `localhost:3000/products/search`
 
 // Front fait un POST pour ajouter un produit;

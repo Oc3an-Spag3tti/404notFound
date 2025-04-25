@@ -71,7 +71,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="relative fixed w-full bg-[#2E1F80] p-4 shadow-lg z-50">
-      <div className="container flex items-center justify-between gap-5">
+      <div className="container flex items-center justify-between gap-5 px-2">
         {/* Logo */}
         <div className="text-2xl font-bold text-white">
           <Link href="/">
@@ -83,30 +83,36 @@ const Header: React.FC = () => {
           </Link>
         </div>
 
-        {/* Icône loupe mobile */}
-        <button
-          onClick={() => {
-            setShowSearchMobile(true); // Ouvre l'overlay
-            if (searchText.trim() !== "") {
-              setShowSuggestions(true); // Montre les suggestions si texte non vide
-            }
-          }}
-          className="block sm:hidden text-white mr-2"
-        >
-          <svg
-            className="w-6 h-6"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
+        {/* Icône mobile */}
+        <div className="flex">
+          <button
+            onClick={() => {
+              setShowSearchMobile(true); // Ouvre l'overlay
+              if (searchText.trim() !== "") {
+                setShowSuggestions(true); // Montre les suggestions si texte non vide
+              }
+            }}
+            className="block sm:hidden text-white mr-2"
           >
-            <path
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-            />
-          </svg>
-        </button>
+            <svg
+              className="w-6 h-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+              />
+            </svg>
+          </button>
+
+          <Link href="/cart" className="text-white sm:hidden">
+            <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
+          </Link>
+        </div>
 
         {/* Desktop search bar */}
         <form
@@ -163,7 +169,7 @@ const Header: React.FC = () => {
           </div>
         </form>
 
-        <div className="flex items-center gap-[100px]">
+        <div className="flex items-center gap-[100px] order-first sm:order-last ">
           {/* Desktop nav */}
           <ul className="hidden lg:flex text-white gap-[50px] text-sm font-medium items-center">
             <li>
@@ -189,41 +195,45 @@ const Header: React.FC = () => {
             </li>
           </ul>
 
-          {/* Menu burger */}
-          <button
-            onClick={() => setIsOpenMenu(!isOpenMenu)}
-            className=" lg:hidden focus:outline-none text-white"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d={
-                  isOpenMenu
-                    ? "M6 18L18 6M6 6l12 12"
-                    : "M4 6h16M4 12h16M4 18h16"
-                }
-              />
-            </svg>
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Cart icon always visible on mobile and desktop */}
 
-          {/* Desktop icons */}
-          <div className="hidden lg:flex items-center space-x-4 text-white">
-            <Link href="/cart">
-              <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
-            </Link>
-            <Link href="/login" target="_blank" rel="noopener noreferrer">
-              <span className="text-gray-200 hover:text-white">Login</span>
-            </Link>
-            <Link href="/register" target="_blank" rel="noopener noreferrer">
-              <span className="text-gray-200 hover:text-white">Register</span>
-            </Link>
+            {/* Menu burger (mobile only) */}
+            <button
+              onClick={() => setIsOpenMenu(!isOpenMenu)}
+              className="lg:hidden focus:outline-none text-white"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d={
+                    isOpenMenu
+                      ? "M6 18L18 6M6 6l12 12"
+                      : "M4 6h16M4 12h16M4 18h16"
+                  }
+                />
+              </svg>
+            </button>
+
+            {/* Desktop nav icons */}
+            <div className="hidden lg:flex items-center space-x-4 text-white">
+              <Link href="/cart">
+                <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
+              </Link>
+              <Link href="/login" target="_blank" rel="noopener noreferrer">
+                <span className="text-gray-200 hover:text-white">Login</span>
+              </Link>
+              <Link href="/register" target="_blank" rel="noopener noreferrer">
+                <span className="text-gray-200 hover:text-white">Register</span>
+              </Link>
+            </div>
           </div>
 
           {/* Overlay Search Mobile */}
