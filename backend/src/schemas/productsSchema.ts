@@ -7,6 +7,7 @@ const productsSchema = new mongoose.Schema({
   desc: String,
   price: Number,
   category: categoriesSchema,
+  caracteristics: Object
 });
 
 export default productsSchema;
