@@ -48,7 +48,8 @@ export default function Login() {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token);
+      // Store the token in a cookie
+      document.cookie = `token=${data.token}; path=/; secure; SameSite=Strict`;
       toast.success("Login successful!");
       router.push("/productsBackOffice"); // Navigate to products page
     } catch (err) {
