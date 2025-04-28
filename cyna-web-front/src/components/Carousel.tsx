@@ -4,6 +4,7 @@ import { FC } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import "swiper/swiper-bundle.css";
+import Image from "next/image";
 
 const Carousel: FC = () => (
   <div className="relative flex items-center w-full mx-auto px-6 bg-[#2E1F80] h-[65vh]">
@@ -20,7 +21,13 @@ const Carousel: FC = () => (
       className="relative"
     >
       <SwiperSlide className="flex items-center justify-center h-64">
-        <div className="w-24 h-24 bg-red-500 rounded-full"></div>
+        <Image
+          src="https://images.freeimages.com/images/large-previews/561/usb-data-key-1183919.jpg"
+          alt="Image 1"
+          width={100}
+          height={100}
+          className="rounded-full"
+        />
       </SwiperSlide>
       <SwiperSlide className="flex items-center justify-center h-64">
         <div className="w-24 h-24 bg-blue-500 rounded-full"></div>
@@ -37,7 +44,7 @@ const Carousel: FC = () => (
         &#8594;
       </div>
       <h2 className="text-center text-2xl font-bold mb-6 text-purple-700">
-        Test Carousel
+        New Products
       </h2>
     </Swiper>
   </div>
