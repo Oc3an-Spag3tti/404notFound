@@ -14,7 +14,9 @@ type AddProductModalProps = {
   onProductAdded?: (product: ProductItem) => void;
 };
 
-export default function AddProductModal({ onProductAdded }: AddProductModalProps) {
+export default function AddProductModal({
+  onProductAdded,
+}: AddProductModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -56,10 +58,15 @@ export default function AddProductModal({ onProductAdded }: AddProductModalProps
 
     setIsLoading(true);
     try {
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1];
       const response = await fetch("http://localhost:3001/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name, description, price }),
       });

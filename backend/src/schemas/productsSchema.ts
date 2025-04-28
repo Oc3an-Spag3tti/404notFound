@@ -4,7 +4,7 @@ import categoriesSchema from "./categoriesSchema";
 
 const productsSchema = new mongoose.Schema({
   name: String,
-  desc: String,
+  description: String,
   price: Number,
   category: String,
   caracteristics: Object
