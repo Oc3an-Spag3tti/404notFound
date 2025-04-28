@@ -182,11 +182,6 @@ const Header: React.FC = () => {
           {/* Desktop nav */}
           <ul className="hidden lg:flex text-white gap-[50px] text-sm font-medium items-center">
             <li>
-              <Link href="/" className="hover:text-purple-200 cursor-pointer">
-                Home
-              </Link>
-            </li>
-            <li>
               <Link
                 href="/categories"
                 className="hover:text-purple-200 cursor-pointer"
@@ -239,6 +234,9 @@ const Header: React.FC = () => {
                   <span className="text-gray-200 hover:text-white">
                     Dashboard
                   </span>
+                </Link>
+                <Link href="/admin">
+                  <span className="text-gray-200 hover:text-white">Admin</span>
                 </Link>
                 <button
                   onClick={handleLogout}
