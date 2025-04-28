@@ -16,9 +16,24 @@ const Header: React.FC = () => {
   const [productsList, setProductsList] = useState<ProductItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showSearchMobile, setShowSearchMobile] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
   const searchBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Check for the token cookie on the client side
+    const hasToken = document.cookie.includes("token");
+    setIsLoggedIn(hasToken);
+  }, []);
+
+  const handleLogout = () => {
+    // Remove the token cookie by setting its expiration date to the past
+    document.cookie =
+      "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Strict";
+    setIsLoggedIn(false);
+    router.push("/"); // Redirect to the login page
+  };
 
   function onSubmitSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -218,12 +233,36 @@ const Header: React.FC = () => {
             <Link href="/cart">
               <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
             </Link>
-            <Link href="/login" target="_blank" rel="noopener noreferrer">
-              <span className="text-gray-200 hover:text-white">Login</span>
-            </Link>
-            <Link href="/register" target="_blank" rel="noopener noreferrer">
-              <span className="text-gray-200 hover:text-white">Register</span>
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link href="/dashboard">
+                  <span className="text-gray-200 hover:text-white">
+                    Dashboard
+                  </span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-200 hover:text-white"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" target="_blank" rel="noopener noreferrer">
+                  <span className="text-gray-200 hover:text-white">Login</span>
+                </Link>
+                <Link
+                  href="/register"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="text-gray-200 hover:text-white">
+                    Register
+                  </span>
+                </Link>{" "}
+              </>
+            )}
           </div>
 
           {/* Overlay Search Mobile */}
