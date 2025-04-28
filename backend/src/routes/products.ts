@@ -29,11 +29,19 @@ productsRouter.get("/search", async (req: Request, res: Response) => {
   });
 });
 
+productsRouter.get("/details", async (req: Request, res: Response) => { 
+  const category = req.query.category;
+  const similarProducts = await Products.find({ category:  category  }).limit(6);
+  res.json(similarProducts);
+})
+
 productsRouter.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const product = await Products.findById(id);
   res.json(product);
 });
+
+
 
 // GET `localhost:3000/products/search`
 
