@@ -17,6 +17,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 mongoose.connect(process.env.MONGO_URL!);
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use("/categories", CategoriesRouteur);

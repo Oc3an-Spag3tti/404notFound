@@ -49,9 +49,10 @@ export default function Register() {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token); // Stocke le token dans le localStorage
+      // Store the token in a cookie
+      document.cookie = `token=${data.token}; path=/; secure; SameSite=Strict`;
       alert("Registration successful!");
-      router.push("/"); // Redirige vers la racine
+      router.push("/"); // Redirect to the root
     } catch (err) {
       console.error(err);
       setError("Server error. Please try again later.");
