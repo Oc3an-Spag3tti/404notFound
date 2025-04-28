@@ -62,6 +62,7 @@ productsRouter.get("/:id", async (req: Request, res: Response) => {
 //   res.json({ _id: product._id, success: true });
 // });
 productsRouter.post("/", isAdmin, async (req: Request, res: Response) => {
+  console.log("req.body", req.body);
   const stripeProduct = await stripe.products.create({
     name: req.body.name,
     description: req.body.description,
@@ -81,6 +82,7 @@ productsRouter.post("/", isAdmin, async (req: Request, res: Response) => {
     desc: req.body.description,
     price: req.body.price,
   });
+  res.json({ _id: stripeProduct.id, success: true });
 });
 
 productsRouter.put("/", isAdmin, async (req: Request, res: Response) => {

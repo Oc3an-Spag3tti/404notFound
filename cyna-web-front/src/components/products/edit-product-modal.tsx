@@ -15,7 +15,10 @@ type EditProductModalProps = {
   onProductUpdated?: (product: ProductItem) => void;
 };
 
-export default function EditProductModal({ product, onProductUpdated }: EditProductModalProps) {
+export default function EditProductModal({
+  product,
+  onProductUpdated,
+}: EditProductModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState(product.name);
   const [description, setDescription] = useState(product.description);
@@ -57,6 +60,12 @@ export default function EditProductModal({ product, onProductUpdated }: EditProd
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("token="))
+                ?.split("=")[1]
+            }`,
           },
           body: JSON.stringify({ name, description, price }),
         }
