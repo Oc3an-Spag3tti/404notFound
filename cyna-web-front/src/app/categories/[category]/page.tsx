@@ -20,8 +20,7 @@ export default function Category() {
         </div>
         <div className="p-5">
           <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-            Here are the biggest enterprise technology acquisitions of 2021 so
-            far, in reverse chronological order.
+            All the security you need to protect your data.
           </p>
         </div>
       </div>
@@ -38,12 +37,12 @@ export default function Category() {
           <div className="px-5 pb-5">
             <a href="#">
               <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Apple Watch Series 7 GPS, Aluminium Case, Starlight Sport
+                SOC Managé
               </h5>
             </a>
             <div className="flex items-center justify-between">
               <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                $599
+                99,99€/month
               </span>
             </div>
           </div>
@@ -60,12 +59,12 @@ export default function Category() {
           <div className="px-5 pb-5">
             <a href="#">
               <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Apple Watch Series 7 GPS, Aluminium Case, Starlight Sport
+                Security Audit
               </h5>
             </a>
             <div className="flex items-center justify-between">
               <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                $599
+                5000€
               </span>
             </div>
           </div>
@@ -82,12 +81,12 @@ export default function Category() {
           <div className="px-5 pb-5">
             <a href="#">
               <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                Apple Watch Series 7 GPS, Aluminium Case, Starlight Sport
+                Pentest
               </h5>
             </a>
             <div className="flex items-center justify-between">
               <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                $599
+                999€
               </span>
             </div>
           </div>
