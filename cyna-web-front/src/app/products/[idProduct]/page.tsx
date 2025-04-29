@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
+import Link from "next/link";
 interface Product {
   _id: string;
   name: string;
@@ -254,7 +254,7 @@ const ProductPage = ({ params }: { params: { idProduct: string } }) => {
           Similar products
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <a href="javascript:;" className="max-w-[384px] mx-auto">
+          <Link href={`/products/${item._id}`} className="max-w-[384px] mx-auto">
             <div className="w-full max-w-sm aspect-square">
               <img
                 src="https://pagedone.io/asset/uploads/1701157806.png"
@@ -285,7 +285,7 @@ const ProductPage = ({ params }: { params: { idProduct: string } }) => {
                 </svg>
               </button>
             </div>
-          </a>
+          </Link>
         </div>
       </div>
     </section>
