@@ -233,17 +233,37 @@ const Header: React.FC = () => {
             </button>
 
             {/* Desktop nav icons */}
-            <div className="hidden lg:flex items-center space-x-4 text-white">
-              <Link href="/cart">
-                <FaShoppingCart className="w-6 h-6 hover:text-gray-300" />
-              </Link>
-              <Link href="/login" target="_blank" rel="noopener noreferrer">
-                <span className="text-gray-200 hover:text-white">Login</span>
-              </Link>
-              <Link href="/register" target="_blank" rel="noopener noreferrer">
-                <span className="text-gray-200 hover:text-white">Register</span>
-              </Link>
-            </div>
+            {isLoggedIn ? (
+              <>
+                <Link href="/dashboard">
+                  <span className="text-gray-200 hover:text-white">
+                    Dashboard
+                  </span>
+                </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-200 hover:text-white"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" target="_blank" rel="noopener noreferrer">
+                  <span className="text-gray-200 hover:text-white">Login</span>
+                </Link>
+                <Link
+                  href="/register"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="text-gray-200 hover:text-white">
+                    Register
+                  </span>
+                </Link>{" "}
+              </>
+            )}
           </div>
 
           {/* Overlay Search Mobile */}
