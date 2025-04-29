@@ -51,7 +51,7 @@ export default function Login() {
       // Store the token in a cookie
       document.cookie = `token=${data.token}; path=/; secure; SameSite=Strict`;
       toast.success("Login successful!");
-      router.push("/productsBackOffice"); // Navigate to products page
+      router.push("/"); // Navigate to products page
     } catch (err) {
       console.error(err);
       setError("Server error. Please try again later.");
