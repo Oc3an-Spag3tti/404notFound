@@ -36,10 +36,10 @@ npm start
 ```
 
 
-## ```.env``` à rajouter
+## ```.env``` à rajouter dans Backend
 ```
 PORT=3001
-MONGO_URL=""
-STRIPE_SECRET_KEY=""
-JWT_SECRET="j"
+MONGO_URL="Your Mongo database URL"
+STRIPE_SECRET_KEY="Your Stripe Secret Key"
+JWT_SECRET="Your JSON Web Token Secret"
 ```
