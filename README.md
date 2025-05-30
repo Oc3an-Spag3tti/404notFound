@@ -17,8 +17,25 @@ Une plateforme de commerce électronique entièrement fonctionnelle, sécurisée
 ```bash
 https://github.com/Oc3an-Spag3tti/404notFound.git
 cd 404notFound
-npm install
 ```
+
+### Lancer le frontend
+
+```bash
+cd cyna-web-front
+npm install       # À exécuter une seule fois
+npm run dev
+```
+
+### lancer le backend
+
+```bash
+cd backend
+npm install       # À exécuter une seule fois
+npm start
+```
+
+
 ## ```.env``` à rajouter
 ```
 PORT=3001
