@@ -19,7 +19,7 @@ git clone https://github.com/Oc3an-Spag3tti/404notFound.git
 cd 404notFound
 ```
 
-### Lancer le frontend
+### Lancer le frontend 
 
 ```bash
 cd cyna-web-front
@@ -27,7 +27,15 @@ npm install       # À exécuter une seule fois
 npm run dev
 ```
 
-### lancer le backend
+## ```.env``` à rajouter dans Backend
+```
+PORT=3001
+MONGO_URL="Your Mongo database URL"          #exemple : MONGO_URL="mongodb://localhost:27017/database"
+STRIPE_SECRET_KEY="Your Stripe Secret Key"
+JWT_SECRET="Your JSON Web Token Secret"
+```
+
+### Lancer le backend dans un second terminal
 
 ```bash
 cd backend
@@ -37,10 +45,4 @@ npm start
 ```
 
 
-## ```.env``` à rajouter dans Backend
-```
-PORT=3001
-MONGO_URL="Your Mongo database URL" #exemple : MONGO_URL="mongodb://localhost:27017/database"
-STRIPE_SECRET_KEY="Your Stripe Secret Key"
-JWT_SECRET="Your JSON Web Token Secret"
-```
+
