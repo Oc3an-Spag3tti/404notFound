@@ -19,3 +19,10 @@ https://github.com/Oc3an-Spag3tti/404notFound.git
 cd 404notFound
 npm install
 ```
+## ```.env``` à rajouter
+```
+PORT=3001
+MONGO_URL=""
+STRIPE_SECRET_KEY=""
+JWT_SECRET="j"
+```
