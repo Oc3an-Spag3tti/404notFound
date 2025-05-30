@@ -15,18 +15,48 @@ productsRouter.get("/", async (req: Request, res: Response) => {
   res.json(products);
 });
 
+// Resultats produits d'une recherche
 productsRouter.get("/search", async (req: Request, res: Response) => {
-  const productName = req.query.product_name;
-  const myLimit = parseInt(req.query.limit as string) || 10;
+  try {
+    const { product_name, sortby, categories } = req.query;
 
-  // TODO utiliser un filtre "case-insensitive" et un "contains"
-  const productSearch = await Products.find({
-    name: { $regex: productName, $options: "i" },
-  }).limit(myLimit);
-  res.json({
-    products: productSearch,
-    success: true,
-  });
+    let categoryList: string[] = [];
+
+    if (categories) {
+      if (Array.isArray(categories)) {
+        categoryList = categories.filter(
+          (c): c is string => typeof c === "string"
+        );
+      } else {
+        categoryList = [categories as string];
+      }
+    }
+
+    const filter = {
+      ...(product_name && {
+        name: { $regex: product_name, $options: "i" },
+      }),
+      ...(categoryList.length > 0 && {
+        category: { $in: categoryList },
+      }),
+    };
+
+    let sortOptions = {};
+
+    if (sortby === "croissant") {
+      sortOptions = { price: 1 };
+    } else if (sortby === "decroissant") {
+      sortOptions = { price: -1 };
+    }
+
+    const result = await Products.find(filter).sort(sortOptions).limit(10);
+    res.json({ success: true, products: result });
+  } catch (error) {
+    console.error("Erreur lors de la recherche :", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Erreur interne du serveur" });
+  }
 });
 
 productsRouter.get("/details", async (req: Request, res: Response) => {
@@ -41,36 +71,6 @@ productsRouter.get("/:id", async (req: Request, res: Response) => {
   res.json(product);
 });
 
-productsRouter.get("/categorie", async (req: Request, res: Response) => {
-  const { categories } = req.params;
-});
-
-// GET `localhost:3000/products/search`
-
-// Front fait un POST pour ajouter un produit;
-// format des données -> { name, description, price }
-
-// productsRouter.post("/", async (req: Request, res: Response) => {
-//   /*const product = new Products(req.body); // instance de notre model
-//   await product.save();*/
-
-//   const name = req.body.name;
-//   const description = req.body.description;
-//   const price = req.body.price;
-
-//   const product = await Products.create({
-//     name,
-//     description,
-//     price,
-//   });
-
-//   /*
-//   un objet qui contient l'identifiant du produit qui vient d'^
-
-//   */
-
-//   res.json({ _id: product._id, success: true });
-// });
 productsRouter.post("/", isAdmin, async (req: Request, res: Response) => {
   console.log("req.body", req.body);
   const stripeProduct = await stripe.products.create({
@@ -111,15 +111,12 @@ productsRouter.put("/", isAdmin, async (req: Request, res: Response) => {
 });
 
 productsRouter.delete("/", isAdmin, async (req: Request, res: Response) => {
-  // 1. INPUT -> _id de type string  -> req.body._id
   const _idString = req.body._id;
   const name = req.body.name;
-  // 2. PROCESS ????
 
   const _objectId = new ObjectId(_idString);
-  // 3. OUTPUT -> un _id de type ObjectId
 
-  const filter = { _id: _objectId }; // to fix
+  const filter = { _id: _objectId };
 
   const product = await Products.deleteOne(filter);
 
